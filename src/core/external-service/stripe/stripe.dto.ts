@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Interval } from './constant';
 
 export class ProductData {
   @IsNotEmpty()
@@ -8,6 +9,12 @@ export class ProductData {
   @IsNotEmpty()
   @IsString()
   description: string;
+}
+
+export class Recurring {
+  @IsNotEmpty()
+  @IsString()
+  interval: Interval;
 }
 
 export class PriceData {
@@ -20,6 +27,9 @@ export class PriceData {
 
   @IsOptional()
   product_data?: ProductData;
+
+  @IsOptional()
+  recurring?: Recurring;
 }
 
 export class LineItems {
@@ -35,6 +45,24 @@ export class CrearStripe {
   lineItems: LineItems[];
 
   @IsNotEmpty()
+  @IsOptional()
+  customer?: string;
+
+  @IsNotEmpty()
   @IsString()
   mode: string;
+}
+
+export class CrearCustomer {
+  @IsNotEmpty()
+  @IsString()
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsOptional()
+  @IsString()
+  test_clock?: string;
 }

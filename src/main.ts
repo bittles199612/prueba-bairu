@@ -3,11 +3,13 @@ import { AppModule } from './app.module';
 import dotenv from 'dotenv';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
+
 dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn'],
+    rawBody: true,
   });
 
   const configService = app.get(ConfigService);

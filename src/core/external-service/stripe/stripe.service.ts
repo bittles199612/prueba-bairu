@@ -19,19 +19,31 @@ export class StriperService {
   ) {}
 
   async createSesion(data: CrearStripe) {
-    console.log(
-      data,
-      '--0--09-09',
-      process.env.STRIPE_SUCCESS_URL,
-      this.configService.get('STRIPE_SUCCESS_URL'),
-    );
     try {
       return await this.stripe.checkout.sessions.create({
         line_items: data.lineItems,
+        customer: data.customer,
         mode: data.mode === ModoPago.PAYMENT ? 'payment' : 'subscription',
         success_url: this.configService.get<string>('STRIPE_SUCCESS_URL'),
         cancel_url: this.configService.get<string>('STRIPE_CANCEL_URL'),
       });
+    } catch (error) {
+      throw new PreconditionFailedException(error);
+    }
+  }
+
+  verify(
+    payload: string | Buffer,
+    signature: string | string[],
+    secret: string,
+  ) {
+    try {
+      const event = this.stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        secret,
+      );
+      return event;
     } catch (error) {
       throw new PreconditionFailedException(error);
     }
