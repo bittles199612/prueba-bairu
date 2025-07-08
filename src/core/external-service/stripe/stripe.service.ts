@@ -50,8 +50,8 @@ export class StriperService {
         rawBody,
         sig ?? '',
         process.env.STRIPE_WEBHOOK_SECRET || '',
-        // 50000000,
       );
+      // 50000000,
       console.log('PASO -------------------------');
     } catch (error) {
       const dataError = error as Error;
