@@ -36,7 +36,7 @@ export class StriperService {
     }
   }
 
-  async webhook(req: RawBodyRequest<Request>, sig: string, res: Response) {
+  async webhook(req: RawBodyRequest<Request>, sig: string) {
     let event: Stripe.Event | undefined;
 
     const rawBody = req.rawBody;
