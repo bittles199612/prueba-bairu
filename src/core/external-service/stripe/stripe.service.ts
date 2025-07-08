@@ -35,23 +35,23 @@ export class StriperService {
       throw new PreconditionFailedException(error);
     }
   }
-
-  webhook(req: RawBodyRequest<Request>, sig: string) {
+  // RawBodyRequest<Request>
+  webhook(req: Request & { rawBody: Buffer }, sig: string) {
     let event: Stripe.Event | undefined;
 
     const rawBody = req.rawBody;
 
     try {
       if (!rawBody) throw new NotFoundException(Messages.EXCEPTION_NOT_FOUND);
-      console.log('✅ rawBody recibido');
-      console.log('🔐 Firma:', sig);
+      // console.log('✅ rawBody recibido');
+      // console.log('🔐 Firma:', sig);
 
       event = this.stripe.webhooks.constructEvent(
         rawBody,
         sig ?? '',
         process.env.STRIPE_WEBHOOK_SECRET || '',
+        50000000,
       );
-      // 50000000,
       console.log('PASO -------------------------');
     } catch (error) {
       const dataError = error as Error;
