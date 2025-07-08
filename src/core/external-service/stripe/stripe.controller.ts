@@ -11,9 +11,9 @@ import {
   Res,
 } from '@nestjs/common';
 import { StriperService } from './stripe.service';
-import { CrearCustomer, CrearStripe } from './stripe.dto';
 import Stripe from 'stripe';
 import { ParamIdDto } from '@/common/dto/param.dto';
+import { CrearStripe } from './stripe.dto';
 
 @Controller('stripe')
 export class StripeController {
@@ -29,21 +29,15 @@ export class StripeController {
 
   @Get('success')
   success(@Res() res: Response) {
-    console.log('-----------------success');
+    console.log('✅-----------------success-----------------');
   }
 
   @Get('cancel')
   cancel(@Res() res: Response) {
-    console.log(res, '-----------------cancel');
+    console.log('❌--------------cancelado--------------');
   }
 
-  @Get('consultar-subscripcion/:id')
-  async cosultarSubscripcion(@Param() param: ParamIdDto) {
-    const { id: idSubscripcion } = param;
-    return await this.stripe.subscriptions.retrieve(idSubscripcion);
-  }
-
-  @Get('ver-detalle/:id')
+  @Get('detalles/:id')
   async detalleCustomer(@Param() param: ParamIdDto) {
     const { id: idSubscripcion } = param;
     const session = await this.stripe.billingPortal.sessions.create({
@@ -53,119 +47,221 @@ export class StripeController {
     return session;
   }
 
-  @Get('intentos-customer/:id')
-  async intentosCustomer(@Param() param: ParamIdDto) {
-    const { id: idCustomer } = param;
-    const invoices = await this.stripe.invoices.list({
-      customer: idCustomer,
-      limit: 100,
+  @Post('portal-url/:id')
+  async mostrarPortal(@Param() param: ParamIdDto) {
+    const { id: idPorta } = param;
+    const resp = await this.stripe.billingPortal.sessions.create({
+      customer: idPorta,
+      return_url: 'http://localhost:8080/perfil',
     });
-    return invoices;
+    return { url: resp.url };
   }
 
-  @Post('cancelar-subscripcion/:id')
-  async cancelarSubscripcion(@Param() param: ParamIdDto) {
-    const { id: idSubscripcion } = param;
-    return await this.stripe.subscriptions.update(idSubscripcion, {
-      cancel_at_period_end: true,
-    });
-  }
-
-  @Post('cancelar-subscripcion-inmediata/:id')
-  async cancelarSubscripcionInmediata(@Param() param: ParamIdDto) {
-    const { id: idSubscripcion } = param;
-    return await this.stripe.subscriptions.update(idSubscripcion);
-  }
-
-  @Post('reactivar-subscripcion/:id')
-  async reactivarSubscripcion(@Param() param: ParamIdDto) {
-    const { id: idSubscripcion } = param;
-    return await this.stripe.subscriptions.update(idSubscripcion, {
-      cancel_at_period_end: false,
+  @Get('pago/:id')
+  async mostrarPagos(@Param() params: ParamIdDto) {
+    const { id: idPago } = params;
+    return await this.stripe.paymentIntents.list({
+      customer: idPago,
+      limit: 10,
     });
   }
 
-  // @Post('pausar-subscripcion-temporal/:id')
-  // async pausarSubscripcionTemporal(@Param() param: ParamIdDto) {
-  //   const { id: idSubscripcion } = param;
-  //   return await this.stripe.subscriptions.update(idSubscripcion, {
-  //     pause_collection: {
-  //       behavior: '',
-  //     },
-  //   });
-  // }
+  @Get('subscripcion/data/:id')
+  async diaPago(@Param() params: ParamIdDto) {
+    const { id: idSubscripcion } = params;
+    return await this.stripe.subscriptions.retrieve(idSubscripcion);
+  }
 
-  @Post('crear-customer')
-  async crearUsuario(@Body() customerDto: CrearCustomer) {
-    return await this.stripe.customers.create(customerDto);
+  @Get('/invoice/detail/:id')
+  async verInvoice(@Param() params: ParamIdDto) {
+    const { id: idInvoice } = params;
+    return await this.stripe.invoices.retrieve(idInvoice);
   }
 
   @Post('webhook')
-  stripeWebhook(
-    @Headers('stripe-signature') signature: string,
+  async stripeWebhook(
+    @Headers('stripe-signature') sig: string,
     @Req() req: RawBodyRequest<Request>,
     @Res() res: Response,
   ) {
-    const rawBody = req.rawBody;
+    return await this.stripeService.webhook(req, sig, res);
 
-    if (!rawBody) {
-      console.log('NO EXISTE');
-      return 'Raw body is missing';
-    }
+    // const rawBody = req.rawBody;
 
-    try {
-      const event = this.stripe.webhooks.constructEvent(
-        rawBody,
-        signature,
-        process.env.STRIPE_WEBHOOK_SECRET || '',
-        50000000,
-      );
-      // TODO para produccion no deberia ponerse este tiempo en segundo se debe configurar bien s
-      console.log('EVENT:', event.type);
-      const session = event.data.object as Stripe.Checkout.Session;
+    // if (!rawBody) {
+    //   console.log('NO EXISTE');
+    //   return 'Raw body is missing';
+    // }
 
-      switch (event.type) {
-        case 'payment_intent.succeeded':
-          console.log('✅ Pago exitoso', event.type);
-          console.log(
-            '-----------------------------------------------------------',
-          );
-          break;
-        case 'customer.subscription.created':
-          console.log('✅ Subscripción creada', event.type);
-          console.log(
-            '-----------------------------------------------------------',
-          );
-          break;
-        case 'checkout.session.completed':
-          console.log('✅ Checkout finalizado', event.type);
-          console.log('Subscripcion ID:', session.subscription);
-          console.log('Subscripcion ID:', session.customer);
+    // try {
+    //   const event = this.stripe.webhooks.constructEvent(
+    //     rawBody,
+    //     signature,
+    //     process.env.STRIPE_WEBHOOK_SECRET || '',
+    //     50000000,
+    //   );
+    //   console.log('EVENTOOOO:', event.type, '********************************');
+    //   const session = event.data.object as Stripe.Checkout.Session;
+    //   const subscription = event.data.object as Stripe.Subscription;
+    //   const invoice = event.data.object as Stripe.Invoice;
+    //   let currentPriceId;
+    //   if (subscription.items && subscription.items.data)
+    //     currentPriceId = subscription.items.data[0].price.id;
+    //   const previous = event.data.previous_attributes as {
+    //     items?: Array<{
+    //       price?: {
+    //         id?: string;
+    //       };
+    //     }>;
+    //   };
 
-          console.log(
-            '-----------------------------------------------------------',
-          );
-          break;
-        case 'customer.subscription.deleted':
-          console.log('✅ Subscripcion cancelada');
-          console.log(
-            '-----------------------------------------------------------',
-          );
-          break;
-        case 'invoice.payment_failed':
-          console.log('invoice.payment_failed', event.type);
-          console.log(
-            '-----------------------------------------------------------',
-          );
-          break;
-        default:
-          console.log(`Evento no manejado: ${event.type}`);
-      }
+    //   let eventoWebhook:
+    //     | Stripe.Checkout.Session
+    //     | Stripe.Subscription
+    //     | Stripe.Invoice;
+    //   switch (event.type) {
+    //     case 'checkout.session.completed': {
+    //       eventoWebhook = event.data.object;
+    //       // console.log('SUB desde session:', session.subscription);
+    //       this.stripeService.transaccion(eventoWebhook, event);
+    //       break;
+    //     }
+    //     //  as Stripe.Checkout.Session
+    //     case 'customer.subscription.created':
+    //     case 'customer.subscription.updated':
+    //     case 'customer.subscription.deleted': {
+    //       eventoWebhook = event.data.object;
+    //       // console.log('SUB desde subscription: ', subscription);
+    //       this.stripeService.transaccion(eventoWebhook, event);
+    //       break;
+    //     }
 
-      return 'Received';
-    } catch (error) {
-      console.error('Webhook error:', error);
-      return `Webhook Error: ${error}`;
-    }
+    //     case 'invoice.paid':
+    //     case 'invoice.created':
+    //     case 'invoice.finalized': {
+    //       eventoWebhook = event.data.object;
+    //       this.stripeService.transaccion(eventoWebhook, event);
+    //       // console.log('SUB desde invoice:', invoice);
+    //       break;
+    //     }
+
+    //     default:
+    //       console.log('Evento no manejado', event.type);
+    //   }
+
+    //   // console.log(
+    //   //   '📦 Subscripcion SUBSCRIPTION ID: 🔑',
+    //   //   eventoWebhook.id ? eventoWebhook.id : 'No disponible',
+    //   // );
+    //   // console.log(
+    //   //   '👤 Subscripcion CUSTOMER ID: 🔑',
+    //   //   session.customer ? session.customer : 'No disponible',
+    //   // );
+    //   // console.log('EVENTO INICIO ******************', event.type);
+
+    //   // switch (event.type) {
+    //   //   case 'payment_intent.succeeded':
+    //   //     console.log('✅ Pago exitoso', event.type);
+    //   //     console.log('🔍 EVENT:	', event.type);
+    //   //     console.log(
+    //   //       '-----------------------------------------------------------',
+    //   //     );
+    //   //     break;
+    //   //   case 'customer.subscription.created':
+    //   //     console.log('✅ Subscripción creada 📬', event.type);
+    //   //     console.log('🔍 EVENT:	', event.type);
+    //   //     console.log(
+    //   //       '-----------------------------------------------------------',
+    //   //     );
+    //   //     break;
+    //   //   case 'checkout.session.completed':
+    //   //     console.log('✅ Checkout finalizado', event.type);
+    //   //     console.log('🔍 EVENT:	', event.type);
+    //   //     console.log(
+    //   //       '-----------------------------------------------------------',
+    //   //     );
+    //   //     break;
+    //   //   case 'customer.subscription.deleted':
+    //   //     console.log('✅ Subscripcion cancelada');
+    //   //     console.log('🔍 EVENT:	', event.type);
+    //   //     console.log(
+    //   //       '-----------------------------------------------------------',
+    //   //     );
+    //   //     break;
+    //   //   case 'customer.subscription.updated':
+    //   //     console.log('✅ Subscripcion updated');
+    //   //     console.log('🔍 EVENT:	', event.type);
+    //   //     if (previous && previous !== currentPriceId) {
+    //   //       console.log(
+    //   //         '✅ 🔁El usuario cambio de plan:',
+    //   //         previous,
+    //   //         '-',
+    //   //         currentPriceId,
+    //   //       );
+    //   //     }
+    //   //     if (subscription.cancel_at_period_end) {
+    //   //       console.log(
+    //   //         'el cliente ha prograamado la cancelacion al final del periodo',
+    //   //       );
+    //   //       console.log('EVENTOOooooooo', event);
+    //   //     } else if (subscription.cancel_at) {
+    //   //       console.log('subscripcion cancelada inmediatamante');
+    //   //     }
+
+    //   //     if (invoice.billing_reason === 'subscription_cycle') {
+    //   //       console.log('🧾 RENOVACION: factura creada para la renovacion ');
+    //   //     }
+    //   //     console.log(
+    //   //       '-----------------------------------------------------------',
+    //   //     );
+    //   //     break;
+    //   //   case 'invoice.payment_failed':
+    //   //     console.log('🧾 invoice.payment_failed', event.type);
+    //   //     console.log('🔍 EVENT:	', event.type);
+    //   //     console.log(
+    //   //       '-----------------------------------------------------------',
+    //   //     );
+    //   //     break;
+
+    //   //   case 'invoice.created':
+    //   //     console.log('🧾 STATUS: CREATE Factura creada con exito 	☑️');
+    //   //     console.log('🔍 EVENT:	', event.type);
+    //   //     console.log('----------------------------------------------------');
+    //   //     break;
+    //   //   case 'invoice.finalized':
+    //   //     console.log(
+    //   //       '🧾  STATUS: FINALIZE factuara ha sido cerrada fianlizada 	☑️',
+    //   //     );
+    //   //     console.log('🔍 EVENT:	', event.type);
+    //   //     console.log('----------------------------------------------------');
+    //   //     break;
+    //   //   case 'invoice.paid':
+    //   //     console.log('🧾 STATUS: PAID pagado exitosamente 	☑️');
+    //   //     console.log('🔍 EVENT:	', event.type);
+    //   //     console.log('----------------------------------------------------');
+    //   //     break;
+    //   //   default:
+    //   //     console.log(`Evento no manejado: ${event.type}`);
+    //   //     console.log('🔍 EVENT:	', event.type);
+    //   // }
+
+    //   return 'Received';
+    // } catch (error) {
+    //   console.error('Webhook error:', error);
+    //   return `Webhook Error: ${error}`;
+    // }
   }
 }
+// Subscripcion SUBSCRIPTION ID 🔐📦: undefined
+// Subscripcion CUSTOMER ID 🔐👤: cus_SbibDVFH5v3Ztp
+// Evento no manejado: invoice.created
+// Subscripcion SUBSCRIPTION ID 🔐📦: undefined
+// Subscripcion CUSTOMER ID 🔐👤: cus_SbibDVFH5v3Ztp
+// Evento no manejado: invoice.finalized
+// Subscripcion SUBSCRIPTION ID 🔐📦: undefined
+// Subscripcion CUSTOMER ID 🔐👤: cus_SbibDVFH5v3Ztp
+// Evento no manejado: invoice.paid
+// Subscripcion SUBSCRIPTION ID 🔐📦: undefined
+// Subscripcion CUSTOMER ID 🔐👤: cus_SbibDVFH5v3Ztp
+// Evento no manejado: invoice.payment_succeeded
+// ✅-----------------success-----------------

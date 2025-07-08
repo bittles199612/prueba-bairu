@@ -53,16 +53,24 @@ export class CrearStripe {
   mode: string;
 }
 
-export class CrearCustomer {
+export class CrearSubscripcion {
   @IsNotEmpty()
-  @IsString()
-  email: string;
+  lineItems: LineItemType[];
 
   @IsNotEmpty()
-  @IsString()
-  name: string;
-
   @IsOptional()
+  customer?: string;
+
+  @IsNotEmpty()
   @IsString()
-  test_clock?: string;
+  mode: string;
+}
+
+export class LineItemType {
+  @IsNotEmpty()
+  @IsString()
+  price: string;
+
+  @IsNotEmpty()
+  quantity: number;
 }

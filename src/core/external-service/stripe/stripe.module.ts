@@ -22,5 +22,6 @@ import { StripeController } from './stripe.controller';
     },
     StriperService,
   ],
+  exports: ['STRIPE_CLIENT', StriperService],
 })
 export class StripeModule {}
