@@ -43,6 +43,7 @@ export class StriperService {
 
     try {
       if (!rawBody) throw new NotFoundException(Messages.EXCEPTION_NOT_FOUND);
+      console.log('WEBHOOOK');
 
       event = await this.stripe.webhooks.constructEventAsync(
         rawBody,
