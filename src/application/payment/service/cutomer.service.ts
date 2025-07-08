@@ -20,6 +20,7 @@ export class CustomerService {
   }
 
   async intentosCustomer(idCustomer: string) {
+    console.log('=---------------------------------', idCustomer);
     const invoices = await this.stripe.invoices.list({
       customer: idCustomer,
       limit: 100,
