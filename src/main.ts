@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import dotenv from 'dotenv';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
+import * as express from 'express';
 
 dotenv.config();
 
@@ -19,6 +20,8 @@ async function bootstrap() {
     methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS',
     credentials: true,
   });
+
+  app.use('/api/stripe/', express.raw({ type: 'application/json' }));
 
   app.setGlobalPrefix(configService.get('PATH_SUBDOMAIN') || 'api');
   app.useGlobalPipes(new ValidationPipe({ transform: true }));

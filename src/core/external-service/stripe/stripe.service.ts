@@ -36,21 +36,23 @@ export class StriperService {
     }
   }
 
-  async webhook(req: RawBodyRequest<Request>, sig: string) {
+  webhook(req: RawBodyRequest<Request>, sig: string) {
     let event: Stripe.Event | undefined;
 
     const rawBody = req.rawBody;
 
     try {
       if (!rawBody) throw new NotFoundException(Messages.EXCEPTION_NOT_FOUND);
-      console.log('WEBHOOOK');
+      console.log('✅ rawBody recibido');
+      console.log('🔐 Firma:', sig);
 
-      event = await this.stripe.webhooks.constructEventAsync(
+      event = this.stripe.webhooks.constructEvent(
         rawBody,
         sig ?? '',
         process.env.STRIPE_WEBHOOK_SECRET || '',
-        50000000,
+        // 50000000,
       );
+      console.log('PASO -------------------------');
     } catch (error) {
       const dataError = error as Error;
       if (dataError) {
@@ -298,12 +300,11 @@ export class StriperService {
         }
         console.log('----------------------------------------------------');
         break;
-
       default:
         console.log(`🔔 Evento no manejado: ${event.type}`);
         console.log('🔍 EVENT:	', event.type);
     }
-
+    return true;
     // const session = event.data.object as Stripe.Checkout.Session
   }
 
