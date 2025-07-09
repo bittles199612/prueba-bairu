@@ -54,6 +54,7 @@ export class StriperService {
         '🔑 Secreto de Webhook (env)::',
         process.env.STRIPE_WEBHOOK_SECRET,
       );
+      console.log('🔑 Secreto de key (env)::', process.env.STRIPE_SECRET_KEY);
       console.log('¿Es Buffer?', Buffer.isBuffer(req.body));
       console.log('Buffer ORIGINAL', req.body);
 
