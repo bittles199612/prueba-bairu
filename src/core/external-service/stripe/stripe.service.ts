@@ -62,7 +62,7 @@ export class StriperService {
       );
       console.log('PASO -------------------------');
     } catch (error) {
-      console.log('ERROR: ');
+      console.log('ERROR: ', error);
       const dataError = error as Error;
       throw new PreconditionFailedException(dataError.message || error);
     }
