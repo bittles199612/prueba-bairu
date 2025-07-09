@@ -12,6 +12,7 @@ import { CrearStripe } from './stripe.dto';
 import { ModoPago } from './constant';
 import { ConfigService } from '@nestjs/config';
 import { Messages } from '@/common/constant/response-mensaje';
+import { Request as ExpressRequest } from 'express';
 
 dotenv.config();
 
@@ -36,9 +37,9 @@ export class StriperService {
     }
   }
 
-  webhook(req: RawBodyRequest<Request>, sig: string) {
+  webhook(req: RawBodyRequest<ExpressRequest>, sig: string) {
     let event: Stripe.Event | undefined;
-
+    console.log('📦 Content-Type:', req.headers['content-type']);
     const rawBody = req.body as unknown as Buffer;
     if (!Buffer.isBuffer(rawBody)) {
       throw new PreconditionFailedException('rawBody no es un Buffer');

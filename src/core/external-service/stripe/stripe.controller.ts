@@ -14,6 +14,7 @@ import { StriperService } from './stripe.service';
 import Stripe from 'stripe';
 import { ParamIdDto } from '@/common/dto/param.dto';
 import { CrearStripe } from './stripe.dto';
+import { Request as ExpressRequest } from 'express';
 
 @Controller('stripe')
 export class StripeController {
@@ -80,7 +81,7 @@ export class StripeController {
 
   @Post('webhook')
   stripeWebhook(
-    @Req() req: RawBodyRequest<Request>,
+    @Req() req: RawBodyRequest<ExpressRequest>,
     @Headers('stripe-signature') sig: string,
   ) {
     return this.stripeService.webhook(req, sig);
