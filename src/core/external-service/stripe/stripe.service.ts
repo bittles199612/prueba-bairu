@@ -45,6 +45,15 @@ export class StriperService {
     }
 
     try {
+      console.log(
+        'Contenido de rawBody (como string, para depuración):',
+        rawBody.toString('utf8'),
+      );
+    } catch (e) {
+      console.warn('No se pudo convertir rawBody a string para depuración:', e);
+    }
+
+    try {
       if (!rawBody) throw new NotFoundException(Messages.EXCEPTION_NOT_FOUND);
       console.log('✅ rawBody recibido', typeof rawBody); // Debería seguir siendo 'object' (Buffer)
       console.log('🔐 Firma (encabezado):', sig);
