@@ -51,7 +51,7 @@ export class StriperService {
       console.log('✅ rawBody recibido', typeof rawBody);
       console.log('🔐 Firma (encabezado):', sig);
       console.log(
-        '🔑 Secreto de Webhook (env):',
+        '🔑 Secreto de Webhook (env)::',
         process.env.STRIPE_WEBHOOK_SECRET,
       );
       console.log('¿Es Buffer?', Buffer.isBuffer(req.body));
