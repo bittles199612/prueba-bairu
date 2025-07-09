@@ -42,9 +42,12 @@ export class StriperService {
 
     try {
       if (!rawBody) throw new NotFoundException(Messages.EXCEPTION_NOT_FOUND);
-      console.log('✅ rawBody recibido', typeof rawBody);
-      console.log('🔐 Firma:', sig);
-      console.log('🔐 Firma:', process.env.STRIPE_WEBHOOK_SECRET);
+      console.log('✅ rawBody recibido', typeof rawBody); // Debería seguir siendo 'object' (Buffer)
+      console.log('🔐 Firma (encabezado):', sig);
+      console.log(
+        '🔑 Secreto de Webhook (env):',
+        process.env.STRIPE_WEBHOOK_SECRET,
+      );
 
       event = this.stripe.webhooks.constructEvent(
         rawBody,
