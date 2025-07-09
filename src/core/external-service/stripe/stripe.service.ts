@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
   PreconditionFailedException,
+  RawBodyRequest,
 } from '@nestjs/common';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
@@ -34,8 +35,8 @@ export class StriperService {
       throw new PreconditionFailedException(error);
     }
   }
-  // RawBodyRequest<Request>
-  webhook(req: Request & { rawBody: Buffer }, sig: string) {
+
+  webhook(req: RawBodyRequest<Request>, sig: string) {
     let event: Stripe.Event | undefined;
 
     const rawBody = req.rawBody;
