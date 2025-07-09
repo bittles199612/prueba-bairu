@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import * as express from 'express';
+import bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -10,8 +11,9 @@ async function bootstrap() {
     logger: ['error', 'warn'],
   });
 
-  app.use('/api/stripe/webhook', express.raw({ type: 'application/json' }));
+  // app.use('/api/stripe/webhook', express.raw({ type: 'application/json' }));
 
+  app.use('/api/stripe/webhook', bodyParser.raw({ type: 'application/json' }));
   app.use(express.json());
 
   const configService = app.get(ConfigService);
