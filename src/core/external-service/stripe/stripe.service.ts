@@ -4,7 +4,6 @@ import {
   InternalServerErrorException,
   NotFoundException,
   PreconditionFailedException,
-  RawBodyRequest,
 } from '@nestjs/common';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
@@ -44,18 +43,9 @@ export class StriperService {
       throw new PreconditionFailedException('rawBody no es un Buffer');
     }
 
-    // try {
-    //   console.log(
-    //     'Contenido de rawBody (como string, para depuración):',
-    //     rawBody.toString('utf8'),
-    //   );
-    // } catch (e) {
-    //   console.warn('No se pudo convertir rawBody a string para depuración:', e);
-    // }
-
     try {
       if (!rawBody) throw new NotFoundException(Messages.EXCEPTION_NOT_FOUND);
-      console.log('✅ rawBody recibido', typeof rawBody); // Debería seguir siendo 'object' (Buffer)
+      console.log('✅ rawBody recibido', typeof rawBody);
       console.log('🔐 Firma (encabezado):', sig);
       console.log(
         '🔑 Secreto de Webhook (env):',
@@ -63,7 +53,6 @@ export class StriperService {
       );
       console.log('¿Es Buffer?', Buffer.isBuffer(req.body));
       console.log('Buffer ORIGINAL', req.body);
-      // console.log('✅ BUFFEERRDebería seguir siendo 'object' (Buffer)
 
       event = this.stripe.webhooks.constructEvent(
         rawBody,
@@ -73,11 +62,9 @@ export class StriperService {
       );
       console.log('PASO -------------------------');
     } catch (error) {
-      console.log(error, 'ERROR');
+      console.log('ERROR: ');
       const dataError = error as Error;
-      if (dataError) {
-        throw new PreconditionFailedException(dataError.message || error);
-      }
+      throw new PreconditionFailedException(dataError.message || error);
     }
 
     if (!event) {
