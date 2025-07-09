@@ -39,7 +39,7 @@ export class StriperService {
 
   webhook(req: RawBodyRequest<ExpressRequest>, sig: string) {
     let event: Stripe.Event | undefined;
-    console.log('📦 Content-Type:', req.headers['content-type']);
+    // console.log('📦 Content-Type:', req.headers['content-type']);
     const rawBody = req.body as unknown as Buffer;
     if (!Buffer.isBuffer(rawBody)) {
       throw new PreconditionFailedException('rawBody no es un Buffer');
@@ -47,14 +47,14 @@ export class StriperService {
 
     try {
       if (!rawBody) throw new NotFoundException(Messages.EXCEPTION_NOT_FOUND);
-      console.log('✅ rawBody recibido', typeof rawBody);
-      console.log('🔐 Firma (encabezado):', sig);
-      console.log(
-        '🔑 Secreto de Webhook (env):',
-        process.env.STRIPE_WEBHOOK_SECRET,
-      );
-      console.log('¿Es Buffer?', Buffer.isBuffer(req.body));
-      console.log('Buffer ORIGINAL', req.body);
+      // console.log('✅ rawBody recibido', typeof rawBody);
+      // console.log('🔐 Firma (encabezado):', sig);
+      // console.log(
+      //   '🔑 Secreto de Webhook (env):',
+      //   process.env.STRIPE_WEBHOOK_SECRET,
+      // );
+      // console.log('¿Es Buffer?', Buffer.isBuffer(req.body));
+      // console.log('Buffer ORIGINAL', req.body);
 
       event = this.stripe.webhooks.constructEvent(
         rawBody,
@@ -62,7 +62,7 @@ export class StriperService {
         process.env.STRIPE_WEBHOOK_SECRET || '',
         // 50000000,
       );
-      console.log('PASO -------------------------');
+      // console.log('PASO -------------------------');
     } catch (error) {
       const dataError = error as Error;
       console.log('ERROR: ', dataError.message);
