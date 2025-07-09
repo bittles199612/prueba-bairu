@@ -1,25 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import dotenv from 'dotenv';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import * as express from 'express';
 
-dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
+    bodyParser: false,
     logger: ['error', 'warn'],
-    rawBody: true,
   });
 
+  app.use('/api/stripe/webhook', express.raw({ type: 'application/json' }));
+
+  app.use(express.json());
+
   const configService = app.get(ConfigService);
-
-  // app.use('/api/stripe/webhook', bodyParser.raw({ type: 'application/json' }));
-  // app.use(
-  //   '/api/stripe/webhook',
-  //   express.raw({ type: 'application/json' }), // 👈 Necesario en Railway y producción
-  // );
-
   app.enableCors({
     origin: true,
     methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS',

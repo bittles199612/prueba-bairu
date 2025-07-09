@@ -36,10 +36,13 @@ export class StriperService {
     }
   }
 
-  webhook(req: RawBodyRequest<Request>, sig: string) {
+  webhook(req: Request, sig: string) {
     let event: Stripe.Event | undefined;
 
-    const rawBody = req.rawBody;
+    const rawBody = req.body as unknown as Buffer;
+    if (!Buffer.isBuffer(rawBody)) {
+      throw new PreconditionFailedException('rawBody no es un Buffer');
+    }
 
     try {
       if (!rawBody) throw new NotFoundException(Messages.EXCEPTION_NOT_FOUND);
