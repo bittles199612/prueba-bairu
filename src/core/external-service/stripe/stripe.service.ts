@@ -4,7 +4,6 @@ import {
   InternalServerErrorException,
   NotFoundException,
   PreconditionFailedException,
-  RawBodyRequest,
 } from '@nestjs/common';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
@@ -43,7 +42,7 @@ export class StriperService {
 
     try {
       if (!rawBody) throw new NotFoundException(Messages.EXCEPTION_NOT_FOUND);
-      console.log('✅ rawBody recibido');
+      console.log('✅ rawBody recibido', typeof rawBody);
       console.log('🔐 Firma:', sig);
       console.log('🔐 Firma:', process.env.STRIPE_WEBHOOK_SECRET);
 
