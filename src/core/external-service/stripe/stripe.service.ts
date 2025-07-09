@@ -49,6 +49,8 @@ export class StriperService {
         '🔑 Secreto de Webhook (env):',
         process.env.STRIPE_WEBHOOK_SECRET,
       );
+      console.log('¿Es Buffer?', Buffer.isBuffer(req.body));
+      // console.log('✅ BUFFEERR', rawBody); // Debería seguir siendo 'object' (Buffer)
 
       event = this.stripe.webhooks.constructEvent(
         rawBody,

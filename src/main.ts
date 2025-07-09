@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import dotenv from 'dotenv';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
-import * as bodyParser from 'body-parser';
+import * as express from 'express';
 
 dotenv.config();
 async function bootstrap() {
@@ -15,6 +15,10 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   // app.use('/api/stripe/webhook', bodyParser.raw({ type: 'application/json' }));
+  // app.use(
+  //   '/api/stripe/webhook',
+  //   express.raw({ type: 'application/json' }), // 👈 Necesario en Railway y producción
+  // );
 
   app.enableCors({
     origin: true,
