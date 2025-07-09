@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import dotenv from 'dotenv';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
+import * as bodyParser from 'body-parser';
 
 dotenv.config();
 async function bootstrap() {
@@ -12,6 +13,8 @@ async function bootstrap() {
   });
 
   const configService = app.get(ConfigService);
+
+  app.use('/api/stripe/webhook', bodyParser.raw({ type: 'application/json' }));
 
   app.enableCors({
     origin: true,
