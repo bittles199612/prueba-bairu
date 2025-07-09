@@ -46,25 +46,25 @@ export class StriperService {
 
     try {
       if (!rawBody) throw new NotFoundException(Messages.EXCEPTION_NOT_FOUND);
-      // console.log('✅ rawBody recibido', typeof rawBody);
-      // console.log('🔐 Firma (encabezado):', sig);
-      // console.log(
-      //   '🔑 Secreto de Webhook (env):',
-      //   process.env.STRIPE_WEBHOOK_SECRET,
-      // );
-      // console.log('¿Es Buffer?', Buffer.isBuffer(req.body));
-      // console.log('Buffer ORIGINAL', req.body);
+      console.log('✅ rawBody recibido', typeof rawBody);
+      console.log('🔐 Firma (encabezado):', sig);
+      console.log(
+        '🔑 Secreto de Webhook (env):',
+        process.env.STRIPE_WEBHOOK_SECRET,
+      );
+      console.log('¿Es Buffer?', Buffer.isBuffer(req.body));
+      console.log('Buffer ORIGINAL', req.body);
 
       event = this.stripe.webhooks.constructEvent(
         rawBody,
         sig ?? '',
         process.env.STRIPE_WEBHOOK_SECRET || '',
-        50000000,
+        // 50000000,
       );
       console.log('PASO -------------------------');
     } catch (error) {
-      console.log('ERROR: ', error);
       const dataError = error as Error;
+      console.log('ERROR: ', dataError.message);
       throw new PreconditionFailedException(dataError.message || error);
     }
 
