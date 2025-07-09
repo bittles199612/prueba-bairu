@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
-import { json, raw } from 'body-parser';
+import { json, raw, urlencoded } from 'body-parser';
 import {
   Request as ExpressRequest,
   Response as ExpressResponse,
@@ -23,6 +23,7 @@ async function bootstrap() {
       json()(req, res, next);
     }
   });
+  app.use(urlencoded({ extended: true }));
 
   const configService = app.get(ConfigService);
   app.enableCors({

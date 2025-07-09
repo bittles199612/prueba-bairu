@@ -81,9 +81,9 @@ export class StripeController {
 
   @Post('webhook')
   stripeWebhook(
-    @Req() req: RawBodyRequest<ExpressRequest>,
-    @Headers('stripe-signature') sig: string,
+    @Body() body: any,
+    // @Headers('stripe-signature') sig: string,
   ) {
-    return this.stripeService.webhook(req, sig);
+    return this.stripeService.webhook(body);
   }
 }
