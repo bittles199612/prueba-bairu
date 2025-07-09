@@ -44,14 +44,14 @@ export class StriperService {
       throw new PreconditionFailedException('rawBody no es un Buffer');
     }
 
-    try {
-      console.log(
-        'Contenido de rawBody (como string, para depuración):',
-        rawBody.toString('utf8'),
-      );
-    } catch (e) {
-      console.warn('No se pudo convertir rawBody a string para depuración:', e);
-    }
+    // try {
+    //   console.log(
+    //     'Contenido de rawBody (como string, para depuración):',
+    //     rawBody.toString('utf8'),
+    //   );
+    // } catch (e) {
+    //   console.warn('No se pudo convertir rawBody a string para depuración:', e);
+    // }
 
     try {
       if (!rawBody) throw new NotFoundException(Messages.EXCEPTION_NOT_FOUND);
@@ -62,7 +62,8 @@ export class StriperService {
         process.env.STRIPE_WEBHOOK_SECRET,
       );
       console.log('¿Es Buffer?', Buffer.isBuffer(req.body));
-      // console.log('✅ BUFFEERR', rawBody); // Debería seguir siendo 'object' (Buffer)
+      console.log('Buffer ORIGINAL', req.body);
+      // console.log('✅ BUFFEERRDebería seguir siendo 'object' (Buffer)
 
       event = this.stripe.webhooks.constructEvent(
         rawBody,
