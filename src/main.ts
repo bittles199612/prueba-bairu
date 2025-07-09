@@ -3,6 +3,11 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { json, raw } from 'body-parser';
+import {
+  Request as ExpressRequest,
+  Response as ExpressResponse,
+  NextFunction,
+} from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -11,7 +16,15 @@ async function bootstrap() {
   });
 
   app.use('/api/stripe/webhook', raw({ type: 'application/json' }));
-  app.use(json());
+  // app.use(json());
+
+  app.use((req: ExpressRequest, res: ExpressResponse, next: NextFunction) => {
+    if (req.originalUrl === '/api/stripe/webhook') {
+      next();
+    } else {
+      json()(req, res, next);
+    }
+  });
 
   const configService = app.get(ConfigService);
   app.enableCors({
