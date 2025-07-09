@@ -14,7 +14,7 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  app.use('/api/stripe/webhook', bodyParser.raw({ type: 'application/json' }));
+  // app.use('/api/stripe/webhook', bodyParser.raw({ type: 'application/json' }));
 
   app.enableCors({
     origin: true,
