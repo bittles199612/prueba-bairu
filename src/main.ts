@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
-import { json, raw, urlencoded } from 'body-parser';
+import bodyParser, { json, raw, urlencoded } from 'body-parser';
 import * as express from 'express';
 import {
   Request as ExpressRequest,
@@ -16,14 +16,24 @@ async function bootstrap() {
     logger: ['error', 'warn'],
   });
 
-  app.use('/api/stripe/webhook', raw({ type: 'application/json' }));
-  app.use((req: ExpressRequest, res: ExpressResponse, next: NextFunction) => {
-    if (req.originalUrl === '/api/stripe/webhook') {
-      next();
-    } else {
-      json()(req, res, next);
-    }
-  });
+  // app.use('/api/stripe/webhook', raw({ type: 'application/json' }));
+  // app.use((req: ExpressRequest, res: ExpressResponse, next: NextFunction) => {
+  //   if (req.originalUrl === '/api/stripe/webhook') {
+  //     next();
+  //   } else {
+  //     json()(req, res, next);
+  //   }
+  // });
+  app.use(
+    bodyParser.json({
+      verify: function (req: ExpressRequest, res: ExpressResponse, buf) {
+        const url = req.originalUrl;
+        if (url.startsWith('/api/stripe/webhook')) {
+          req.rawBody = buf;
+        }
+      },
+    }),
+  );
   // app.use((req: ExpressRequest, res: ExpressResponse, next: NextFunction) => {
   //   if (req.originalUrl === '/api/stripe/webhook') return next();
   //   json()(req, res, next);
