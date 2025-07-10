@@ -17,20 +17,20 @@ async function bootstrap() {
   });
 
   app.use('/api/stripe/webhook', raw({ type: 'application/json' }));
-  // app.use((req: ExpressRequest, res: ExpressResponse, next: NextFunction) => {
-  //   if (req.originalUrl === '/api/stripe/webhook') {
-  //     next();
-  //   } else {
-  //     json()(req, res, next);
-  //   }
-  // });
+  app.use((req: ExpressRequest, res: ExpressResponse, next: NextFunction) => {
+    if (req.originalUrl === '/api/stripe/webhook') {
+      next();
+    } else {
+      json()(req, res, next);
+    }
+  });
   // app.use((req: ExpressRequest, res: ExpressResponse, next: NextFunction) => {
   //   if (req.originalUrl === '/api/stripe/webhook') return next();
   //   json()(req, res, next);
   // });
   // app.use(urlencoded({ extended: true }));
   // app.use(express.json());
-  app.use(json());
+  // app.use(json());
   app.use(urlencoded({ extended: true }));
 
   const configService = app.get(ConfigService);
