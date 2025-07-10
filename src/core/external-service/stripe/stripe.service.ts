@@ -11,7 +11,6 @@ import { CrearStripe } from './stripe.dto';
 import { ModoPago } from './constant';
 import { ConfigService } from '@nestjs/config';
 import { Messages } from '@/common/constant/response-mensaje';
-import { Request as ExpressRequest } from 'express';
 
 dotenv.config();
 
@@ -40,34 +39,28 @@ export class StriperService {
     }
   }
 
-  webhook(req: Buffer, sig: string) {
-    // webhook(req: RawBodyRequest<ExpressRequest>, sig: string) {
+  webhook(req: Request, sig: string) {
     let event: Stripe.Event | undefined;
-    // const rawBody = req.body as unknown as Buffer;
+    const rawBody = req.body as unknown as Buffer;
 
     try {
       if (!req) throw new NotFoundException(Messages.EXCEPTION_NOT_FOUND);
       console.log('✅ rawBody recibido', typeof req);
-      // console.log('🔎 rawBody STRING:', rawBody);
+      console.log('🔎 rawBody STRING:', rawBody);
       console.log('🔎 rawBody STRING:', req);
       console.log('🔎 Signature header:', sig);
       console.log('🔎 Webhook secret:', process.env.STRIPE_WEBHOOK_SECRET);
       console.log('🔑 Secreto de key (env)::', process.env.STRIPE_SECRET_KEY);
-      // console.log('¿Es Buffer?', Buffer.isBuffer(req.rawBody));
       console.log('¿Es Buffer?', Buffer.isBuffer(req));
       console.log('Buffer ORIGINAL', req);
 
-      // if (!req.rawBody)
-      //   throw new PreconditionFailedException('No se recibio el cuerpop crudo');
-
       event = this.stripe.webhooks.constructEvent(
-        req,
-        // req.rawBody,
+        rawBody,
         sig ?? '',
         process.env.STRIPE_WEBHOOK_SECRET || '',
         // 50000000,
       );
-      // console.log('PASO -------------------------');
+      console.log('PASO -------------------------');
     } catch (error) {
       const dataError = error as Error;
       console.log('ERROR: ', dataError.message);

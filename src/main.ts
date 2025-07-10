@@ -14,30 +14,11 @@ async function bootstrap() {
     bodyParser: false,
     logger: ['error', 'warn'],
   });
-  // app.use(
-  //   json({
-  //     verify: (
-  //       request: RequestWithRawBody,
-  //       response: Response,
-  //       buffer: Buffer,
-  //     ) => {
-  //       if (request.url === '/webhook' && Buffer.isBuffer(buffer)) {
-  //         request.rawBody = Buffer.from(buffer);
-  //       }
-  //       return true;
-  //     },
-  //   }),
-  // );
   const expressApp = app.getHttpAdapter().getInstance() as Express;
 
-  expressApp.use(
-    express.json({
-      verify: (req: Request, res, buf) => {
-        if (req.originalUrl.startsWith('/api/stripe/webhook')) {
-          req.rawBody = buf; // ← necesario para Stripe
-        }
-      },
-    }),
+  expressApp.post(
+    '/api/stripe/webhook',
+    express.raw({ type: 'application/json' }),
   );
 
   const configService = app.get(ConfigService);
