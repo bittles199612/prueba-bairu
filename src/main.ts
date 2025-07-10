@@ -16,7 +16,7 @@ async function bootstrap() {
     logger: ['error', 'warn'],
   });
 
-  // app.use('/api/stripe/webhook', raw({ type: 'application/json' }));
+  app.use('/api/stripe/webhook', raw({ type: 'application/json' }));
   // app.use((req: ExpressRequest, res: ExpressResponse, next: NextFunction) => {
   //   if (req.originalUrl === '/api/stripe/webhook') {
   //     next();
@@ -24,16 +24,16 @@ async function bootstrap() {
   //     json()(req, res, next);
   //   }
   // });
-  app.use(
-    bodyParser.json({
-      verify: function (req: ExpressRequest, res: ExpressResponse, buf) {
-        const url = req.originalUrl;
-        if (url.startsWith('/api/stripe/webhook')) {
-          req.rawBody = buf;
-        }
-      },
-    }),
-  );
+  // app.use(
+  //   bodyParser.json({
+  //     verify: function (req: ExpressRequest, res: ExpressResponse, buf) {
+  //       const url = req.originalUrl;
+  //       if (url.startsWith('/api/stripe/webhook')) {
+  //         req.rawBody = buf;
+  //       }
+  //     },
+  //   }),
+  // );
   // app.use((req: ExpressRequest, res: ExpressResponse, next: NextFunction) => {
   //   if (req.originalUrl === '/api/stripe/webhook') return next();
   //   json()(req, res, next);
