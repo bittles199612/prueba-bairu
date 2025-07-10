@@ -81,12 +81,12 @@ export class StripeController {
 
   @Post('webhook')
   stripeWebhook(
-    // @Req() req: RawBodyRequest<ExpressRequest>,
-    @Req() req: Request,
+    @Req() req: RawBodyRequest<ExpressRequest>,
+    // @Req() req: Request,
     @Headers('stripe-signature') sig: string,
   ) {
-    const rawBody = req.body as unknown as Buffer;
-    return this.stripeService.webhook(rawBody, sig);
+    // const rawBody = req.body as unknown as Buffer;
+    return this.stripeService.webhook(req, sig);
   }
 }
 
