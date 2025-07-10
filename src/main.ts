@@ -16,7 +16,7 @@ async function bootstrap() {
     logger: ['error', 'warn'],
   });
 
-  // app.use('/api/stripe/webhook', raw({ type: 'application/json' }));
+  app.use('/api/stripe/webhook', raw({ type: 'application/json' }));
   // app.use((req: ExpressRequest, res: ExpressResponse, next: NextFunction) => {
   //   if (req.originalUrl === '/api/stripe/webhook') {
   //     next();
