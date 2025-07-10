@@ -50,7 +50,7 @@ export class StriperService {
     try {
       if (!req) throw new NotFoundException(Messages.EXCEPTION_NOT_FOUND);
       console.log('✅ rawBody recibido', typeof req);
-      console.log('🔎 rawBody STRING:', rawBody.toString());
+      console.log('🔎 rawBody STRING:', rawBody);
       console.log('🔎 Signature header:', sig);
       console.log('🔎 Webhook secret:', process.env.STRIPE_WEBHOOK_SECRET);
       console.log('🔑 Secreto de key (env)::', process.env.STRIPE_SECRET_KEY);
