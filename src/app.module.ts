@@ -14,6 +14,6 @@ import * as express from 'express';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RawBodyMiddleware).forRoutes('api/stripe/webhook');
+    consumer.apply(RawBodyMiddleware).forRoutes('stripe/webhook');
   }
 }
