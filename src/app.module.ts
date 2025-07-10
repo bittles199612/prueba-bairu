@@ -13,11 +13,7 @@ import * as express from 'express';
   providers: [AppService],
 })
 export class AppModule {
-  // configure(consumer: MiddlewareConsumer) {
-  //   consumer
-  //     .apply(RawBodyMiddleware)
-  //     .forRoutes({ path: '/api/stripe/webhook', method: RequestMethod.POST })
-  //     .apply(express.json())
-  //     .forRoutes({ path: '*path', method: RequestMethod.ALL });
-  // }
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RawBodyMiddleware).forRoutes('api/stripe/webhook');
+  }
 }

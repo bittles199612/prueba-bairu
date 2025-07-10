@@ -24,16 +24,16 @@ async function bootstrap() {
   //     json()(req, res, next);
   //   }
   // });
-  app.use(
-    bodyParser.json({
-      verify: function (req: ExpressRequest, res: ExpressResponse, buf) {
-        const url = req.originalUrl;
-        if (url.startsWith('/api/stripe/webhook')) {
-          req.rawBody = buf;
-        }
-      },
-    }),
-  );
+  // app.use(
+  //   bodyParser.json({
+  //     verify: function (req: ExpressRequest, res: ExpressResponse, buf) {
+  //       const url = req.originalUrl;
+  //       if (url.startsWith('/api/stripe/webhook')) {
+  //         req.rawBody = buf;
+  //       }
+  //     },
+  //   }),
+  // );
   // app.use((req: ExpressRequest, res: ExpressResponse, next: NextFunction) => {
   //   if (req.originalUrl === '/api/stripe/webhook') return next();
   //   json()(req, res, next);
@@ -41,7 +41,7 @@ async function bootstrap() {
   // app.use(urlencoded({ extended: true }));
   // app.use(express.json());
   // app.use(json());
-  app.use(urlencoded({ extended: true }));
+  // app.use(urlencoded({ extended: true }));
 
   const configService = app.get(ConfigService);
   app.enableCors({
