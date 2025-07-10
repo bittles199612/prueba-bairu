@@ -37,8 +37,7 @@ export class StriperService {
     }
   }
 
-  webhook(body: any, req: RawBodyRequest<ExpressRequest>, sig: string) {
-    console.log(body, 'BODYYYYYYYYYYYY');
+  webhook(req: RawBodyRequest<ExpressRequest>, sig: string) {
     let event: Stripe.Event | undefined;
     // console.log('📦 Content-Type:', req.headers['content-type']);
     const rawBody = req.body as unknown as Buffer;
@@ -62,7 +61,7 @@ export class StriperService {
         rawBody,
         sig ?? '',
         process.env.STRIPE_WEBHOOK_SECRET || '',
-        // 50000000,
+        50000000,
       );
       // console.log('PASO -------------------------');
     } catch (error) {
