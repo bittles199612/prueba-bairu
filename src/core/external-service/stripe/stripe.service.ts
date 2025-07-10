@@ -42,7 +42,6 @@ export class StriperService {
 
   webhook(req: Buffer, sig: string) {
     // webhook(req: RawBodyRequest<ExpressRequest>, sig: string) {
-    console.log('00000');
     let event: Stripe.Event | undefined;
     // const rawBody = req.body as unknown as Buffer;
 
