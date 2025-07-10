@@ -2,31 +2,43 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
-import bodyParser, { json, raw, urlencoded } from 'body-parser';
-import {
-  Request as ExpressRequest,
-  Response as ExpressResponse,
-  NextFunction,
-} from 'express';
-import express, { Express, Request, Response } from 'express';
+import { json } from 'body-parser';
+import { Request, Response } from 'express';
+
+interface RequestWithRawBody extends Request {
+  rawBody: Buffer;
+}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    bodyParser: false,
+    // bodyParser: false,
     logger: ['error', 'warn'],
   });
-
-  const expressApp = app.getHttpAdapter().getInstance() as Express;
-
-  expressApp.use(
-    express.json({
-      verify: (req: Request, res, buf) => {
-        if (req.originalUrl.startsWith('/api/stripe/webhook')) {
-          req.rawBody = buf; // ← necesario para Stripe
+  app.use(
+    json({
+      verify: (
+        request: RequestWithRawBody,
+        response: Response,
+        buffer: Buffer,
+      ) => {
+        if (request.url === '/webhook' && Buffer.isBuffer(buffer)) {
+          request.rawBody = Buffer.from(buffer);
         }
+        return true;
       },
     }),
   );
+  // const expressApp = app.getHttpAdapter().getInstance() as Express;
+
+  // expressApp.use(
+  //   express.json({
+  //     verify: (req: Request, res, buf) => {
+  //       if (req.originalUrl.startsWith('/api/stripe/webhook')) {
+  //         req.rawBody = buf; // ← necesario para Stripe
+  //       }
+  //     },
+  //   }),
+  // );
 
   const configService = app.get(ConfigService);
   app.enableCors({

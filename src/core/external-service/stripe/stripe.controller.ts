@@ -6,11 +6,10 @@ import {
   Inject,
   Param,
   Post,
-  RawBodyRequest,
   Req,
   Res,
 } from '@nestjs/common';
-import { StriperService } from './stripe.service';
+import { RequestWithRawBody, StriperService } from './stripe.service';
 import Stripe from 'stripe';
 import { ParamIdDto } from '@/common/dto/param.dto';
 import { CrearStripe } from './stripe.dto';
@@ -81,12 +80,12 @@ export class StripeController {
 
   @Post('webhook')
   stripeWebhook(
-    @Req() req: RawBodyRequest<ExpressRequest>,
+    @Req() req: RequestWithRawBody, //RawBodyRequest<ExpressRequest>,
     // @Req() req: Request,
     @Headers('stripe-signature') sig: string,
   ) {
     // const rawBody = req.body as unknown as Buffer;
-    return this.stripeService.webhook(req, sig);
+    return this.stripeService.webhook(req.rawBody, sig);
   }
 }
 
