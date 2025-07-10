@@ -29,7 +29,7 @@ async function bootstrap() {
       verify: function (req: ExpressRequest, res: ExpressResponse, buf) {
         const url = req.originalUrl;
         if (url.startsWith('/api/stripe/webhook')) {
-          req.rawBody = buf.toString();
+          req.rawBody = buf;
         }
       },
     }),
